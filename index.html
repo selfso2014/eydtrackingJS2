@@ -7,7 +7,7 @@
   <style>
     :root { color-scheme: dark; }
     html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background:#0b0b10; color:#e9e9f2; }
-    header { position: fixed; top: 0; left: 0; right: 0; z-index: 10; padding: 12px 14px; background: rgba(11,11,16,0.85); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.08); }
+    header { position: fixed; top: 0; left: 0; right: 0; z-index: 10; padding: 12px 14px; background: rgba(11,11,16,0.85); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.08);[...] }
     .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
     .row > * { flex: 0 0 auto; }
     input, select, button { background:#141420; color:#e9e9f2; border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:10px 12px; }
@@ -26,8 +26,6 @@
 <body>
   <header>
     <div class="row">
-      <label class="hint">License Key</label>
-      <input id="licenseKey" spellcheck="false" />
       <label class="hint">Calibration</label>
       <select id="calPoints">
         <option value="1">1 point</option>
