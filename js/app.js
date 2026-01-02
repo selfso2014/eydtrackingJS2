@@ -1,6 +1,7 @@
 // js/app.js
 import { loadWebpackModule } from "./webpack-loader.js";
 
+
 const LICENSE_KEY = "dev_1ntzip9admm6g0upynw3gooycnecx0vl93hz8nox"; // Key is not shown in the UI.
 
 const els = {  calPoints: document.getElementById("calPoints"),
