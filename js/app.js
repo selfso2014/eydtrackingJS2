@@ -4,7 +4,7 @@ import { loadWebpackModule } from "./webpack-loader.js";
 const DEFAULT_LICENSE_KEY = "dev_1ntzip9admm6g0upynw3gooycnecx0vl93hz8nox"; // replace if needed
 
 const els = {
-  licenseKey: document.getElementById("licenseKey"),
+  // licenseKey input removed (no longer shown in UI)
   calPoints: document.getElementById("calPoints"),
   btnStart: document.getElementById("btnStart"),
   btnStop: document.getElementById("btnStop"),
@@ -168,7 +168,8 @@ async function loadSDK() {
 }
 
 async function initSDK() {
-  const licenseKey = els.licenseKey.value.trim();
+  // License key is no longer shown in UI. Use URL param (if present) or default.
+  const licenseKey = new URLSearchParams(location.search).get("licenseKey") || DEFAULT_LICENSE_KEY;
   if (!licenseKey) throw new Error("License key is empty.");
 
   const userId = getOrCreateUserId();
@@ -232,7 +233,8 @@ function stopTracking() {
 }
 
 function calibrate() {
-  const licenseKey = els.licenseKey.value.trim();
+  // License key is taken from URL or default (not from UI anymore).
+  const licenseKey = new URLSearchParams(location.search).get("licenseKey") || DEFAULT_LICENSE_KEY;
   const userId = getOrCreateUserId();
   const points = parseInt(els.calPoints.value, 10) || 5;
 
@@ -248,7 +250,7 @@ function calibrate() {
 
 async function main() {
   // UI init
-  els.licenseKey.value = qs("licenseKey") || DEFAULT_LICENSE_KEY;
+  // licenseKey input was removed, so we no longer set els.licenseKey.value here.
 
   // Resize
   ctx = resizeCanvas();
