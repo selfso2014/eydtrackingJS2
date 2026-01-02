@@ -1,11 +1,9 @@
 // js/app.js
 import { loadWebpackModule } from "./webpack-loader.js";
 
-const DEFAULT_LICENSE_KEY = "dev_1ntzip9admm6g0upynw3gooycnecx0vl93hz8nox"; // replace if needed
+const LICENSE_KEY = "dev_1ntzip9admm6g0upynw3gooycnecx0vl93hz8nox"; // Key is not shown in the UI.
 
-const els = {
-  // licenseKey input removed (no longer shown in UI)
-  calPoints: document.getElementById("calPoints"),
+const els = {  calPoints: document.getElementById("calPoints"),
   btnStart: document.getElementById("btnStart"),
   btnStop: document.getElementById("btnStop"),
   btnCal: document.getElementById("btnCal"),
@@ -18,7 +16,6 @@ const els = {
 };
 
 function setPill(el, text) { el.textContent = text; }
-function qs(name) { return new URLSearchParams(location.search).get(name); }
 
 function getOrCreateUserId() {
   const key = "eyedid_user_id";
@@ -72,46 +69,6 @@ let TrackingState = null;
 let sdkReady = false;
 let tracking = false;
 
-// Colors
-const CAL_POINT_COLOR = "#0a84ff";      // calibration points: blue
-const GAZE_COLOR_UNCALIBRATED = "#ff3b30"; // gaze before calibration: red
-const GAZE_COLOR_CALIBRATED = "#34c759";   // gaze after calibration: green
-
-let calibrated = false;
-
-function drawCalibrationPreview(points) {
-  if (!ctx) ctx = resizeCanvas();
-  clearCanvas();
-  // canvas uses devicePixelRatio transform, compute CSS pixels for layout
-  const dpr = window.devicePixelRatio || 1;
-  const w = els.canvas.width / dpr;
-  const h = els.canvas.height / dpr;
-
-  const positions = [];
-  if (points === 1) {
-    positions.push({ x: w / 2, y: h / 2 });
-  } else if (points === 5) {
-    positions.push({ x: w / 2, y: h / 2 });
-    positions.push({ x: w * 0.15, y: h * 0.2 });
-    positions.push({ x: w * 0.85, y: h * 0.2 });
-    positions.push({ x: w * 0.15, y: h * 0.8 });
-    positions.push({ x: w * 0.85, y: h * 0.8 });
-  } else {
-    // evenly distribute around center
-    for (let i = 0; i < points; i++) {
-      const angle = (i / points) * Math.PI * 2;
-      positions.push({ x: w / 2 + Math.cos(angle) * w * 0.35, y: h / 2 + Math.sin(angle) * h * 0.35 });
-    }
-  }
-
-  ctx.fillStyle = CAL_POINT_COLOR;
-  positions.forEach((p) => {
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, 12, 0, Math.PI * 2);
-    ctx.fill();
-  });
-}
-
 function onGaze(gazeInfo) {
   if (!ctx) ctx = resizeCanvas();
 
@@ -125,7 +82,7 @@ function onGaze(gazeInfo) {
 
   ctx.beginPath();
   ctx.arc(x, y, 10, 0, Math.PI * 2, true);
-  ctx.fillStyle = calibrated ? GAZE_COLOR_CALIBRATED : GAZE_COLOR_UNCALIBRATED;
+  ctx.fillStyle = "#ff3b30";
   ctx.fill();
 
   // small crosshair
@@ -168,9 +125,8 @@ async function loadSDK() {
 }
 
 async function initSDK() {
-  // License key is no longer shown in UI. Use URL param (if present) or default.
-  const licenseKey = new URLSearchParams(location.search).get("licenseKey") || DEFAULT_LICENSE_KEY;
-  if (!licenseKey) throw new Error("License key is empty.");
+  const licenseKey = LICENSE_KEY;
+  if (!licenseKey) throw new Error("License key is not configured.");
 
   const userId = getOrCreateUserId();
 
@@ -193,12 +149,10 @@ async function initSDK() {
   if (calFromUrl) {
     localStorage.setItem(`eyedid_calibration_${userId}`, calFromUrl);
     await seeso.setCalibrationData(calFromUrl);
-    calibrated = true;
   } else {
     const cached = localStorage.getItem(`eyedid_calibration_${userId}`);
     if (cached) {
       await seeso.setCalibrationData(cached);
-      calibrated = true;
     }
   }
 }
@@ -233,13 +187,9 @@ function stopTracking() {
 }
 
 function calibrate() {
-  // License key is taken from URL or default (not from UI anymore).
-  const licenseKey = new URLSearchParams(location.search).get("licenseKey") || DEFAULT_LICENSE_KEY;
+  const licenseKey = LICENSE_KEY;
   const userId = getOrCreateUserId();
   const points = parseInt(els.calPoints.value, 10) || 5;
-
-  // Draw a short preview of calibration points (blue) on the canvas before redirecting.
-  drawCalibrationPreview(points);
 
   // Redirect URL should be the exact GitHub Pages URL of this page (without query string).
   const redirectUrl = `${location.origin}${location.pathname}`;
@@ -248,9 +198,7 @@ function calibrate() {
   EasySeeso.openCalibrationPageQuickStart(licenseKey, userId, redirectUrl, points);
 }
 
-async function main() {
-  // UI init
-  // licenseKey input was removed, so we no longer set els.licenseKey.value here.
+async function main() {  // UI init
 
   // Resize
   ctx = resizeCanvas();
